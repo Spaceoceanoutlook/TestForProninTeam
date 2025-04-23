@@ -3,7 +3,7 @@ from django.dispatch import receiver
 from .models import Payment
 
 @receiver(post_save, sender=Payment)
-def update_contributors_on_payment(instance, created, **kwargs):
+def update_contributors_on_payment(sender, instance, created, **kwargs):
     if created:
         collect = instance.collect
         collect.contributors_count = Payment.objects.filter(
@@ -13,7 +13,7 @@ def update_contributors_on_payment(instance, created, **kwargs):
 
 @receiver(post_save, sender=Payment)
 def update_collected_amount(sender, instance, created, **kwargs):
-    if created:  # Только для новых платежей
+    if created:
         collect = instance.collect
         collect.current_amount += instance.amount
         collect.save()
