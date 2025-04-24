@@ -14,7 +14,7 @@ router.register(r'payments', PaymentViewSet, basename='payment')
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="DonationCollect API",
+        title="DonateCollect API",
         default_version='v1',
     ),
     public=True,
