@@ -11,7 +11,7 @@ class CollectSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Collect
-        fields = ['id', 'title', 'author', 'current_amount', 'contributors_count']
+        fields = ['id', 'title', 'author', 'target_amount', 'current_amount', 'contributors_count']
         read_only_fields = ('current_amount', 'contributors_count', 'author')
 
 class CollectDetailSerializer(CollectSerializer):
