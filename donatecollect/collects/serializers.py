@@ -38,5 +38,5 @@ class CollectDetailSerializer(CollectSerializer):
     
     def get_payments(self, obj):
         payments = obj.payments.all()[:10]
-        return PaymentSerializer(payments, many=True).data
+        return PaymentSerializer(payments, many=True, context=self.context).data
     
