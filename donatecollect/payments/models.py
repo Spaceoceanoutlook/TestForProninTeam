@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from collects.models import Collect
+from django.core.validators import validate_email
 
 User = get_user_model()
 
@@ -12,3 +13,8 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.amount}"
+    
+    def save(self, *args, **kwargs):
+        validate_email(self.user.email)
+        validate_email(self.collect.author.email)
+        super().save(*args, **kwargs)
