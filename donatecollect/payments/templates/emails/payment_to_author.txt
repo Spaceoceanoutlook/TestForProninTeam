@@ -1,5 +1,6 @@
 Привет!
 
-Пользователь {{ donator }} пожертвовал {{ amount }} в ваш сбор "{{ collect_title }}".
+Пользователь {{ donator }} пожертвовал {{ amount }} рублей в ваш сбор "{{ collect_title }}".
 
-Текущая собранная сумма: {{ collect.current_amount }}
+Текущая собранная сумма: {{ current_amount }}
+Целевая сумма: {{ target_amount }}
