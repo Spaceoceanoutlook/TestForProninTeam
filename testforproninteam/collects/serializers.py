@@ -18,7 +18,7 @@ class CollectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collect
         fields = ['id', 'title', 'author', 'target_amount', 'current_amount', 
-                'contributors_count', 'end_datetime']
+                  'contributors_count', 'end_datetime']
         read_only_fields = ('current_amount', 'contributors_count', 'author')
 
     def validate_end_datetime(self, value):
@@ -29,14 +29,12 @@ class CollectSerializer(serializers.ModelSerializer):
 
 class CollectDetailSerializer(CollectSerializer):
     payments = serializers.SerializerMethodField()
-    
+
     class Meta(CollectSerializer.Meta):
         fields = CollectSerializer.Meta.fields + [
-            'payments', 'description', 'reason', 
-            'cover_image'
+            'payments', 'description', 'reason', 'cover_image'
         ]
-    
+
     def get_payments(self, obj):
-        payments = obj.payments.all()[:10]
+        payments = obj.payments.all()[:10]  # Ограничиваем количество платежей
         return PaymentSerializer(payments, many=True, context=self.context).data
-    
