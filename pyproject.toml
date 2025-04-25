@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Spaceocean <spaceocean@outlook.com>"]
 readme = "README.md"
+packages = [{include = "testforproninteam"}]
 
 
 [tool.poetry.dependencies]
@@ -22,4 +23,4 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.scripts]
-post-install = "python -c \"from pathlib import Path; import shutil; env_file = Path('.env'); example_file = Path('.env.example'); if not env_file.exists() and example_file.exists(): shutil.copy(example_file, env_file); print('Файл .env создан из .env.example. Заполните его!')\""
+init-env = "scripts.setup_env:main"
