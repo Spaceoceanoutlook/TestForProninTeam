@@ -18,3 +18,12 @@ python-dotenv = "^1.1.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.scripts]
+post-install = """
+python -c \"from pathlib import Path; import shutil; 
+env_file = Path('.env'); example_file = Path('.env.example'); 
+if not env_file.exists() and example_file.exists(): shutil.copy(example_file, env_file); 
+print('Файл .env создан из .env.example. Заполните его!')\"
+"""
