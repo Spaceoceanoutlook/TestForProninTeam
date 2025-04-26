@@ -1,16 +1,16 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.core.cache import cache
 import logging
 import traceback
 from .models import Collect
 
 logger = logging.getLogger(__name__)
-
 
 def is_valid_email(email):
     try:
@@ -53,3 +53,17 @@ def send_collect_created_email(sender, instance, created, **kwargs):
         except Exception as e:
             logger.error(f"Failed to send collect creation email: {str(e)}")
             logger.debug(traceback.format_exc())
+
+    # Очистка кэша после сохранения объекта
+    cache.delete('collections_cache_key')
+    if created:
+        logger.info(f"New collect created: {instance.title}")
+    else:
+        logger.info(f"Collect updated: {instance.title}")
+
+
+@receiver(post_delete, sender=Collect)
+def clear_cache_on_collect_delete(sender, instance, **kwargs):
+    # Очистка кэша при удалении объекта
+    cache.delete('collections_cache_key')
+    logger.info(f"Collect deleted: {instance.title}")

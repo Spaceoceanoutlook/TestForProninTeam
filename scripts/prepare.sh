@@ -6,25 +6,32 @@ ENV_EXAMPLE_FILE=".env.example"
 
 echo "=== ⚙️  Подготовка окружения ==="
 
-# Проверяем, существует ли уже .env
-if [ ! -f "$ENV_FILE" ]; then
-  if [ -f "$ENV_EXAMPLE_FILE" ]; then
-    cp "$ENV_EXAMPLE_FILE" "$ENV_FILE"
-    echo "✅ Скопирован .env.example → .env"
-  else
-    echo "❌ Файл .env.example не найден!"
-    exit 1
-  fi
-else
-  echo "ℹ️ Файл .env уже существует, пропускаем создание."
+# Если .env существует, пропускаем настройку и сразу запускаем контейнеры
+if [ -f "$ENV_FILE" ]; then
+  echo "ℹ️ Файл .env уже существует, пропускаем настройку."
+  docker-compose up --build
+  exit 0
 fi
+
+# Проверяем, существует ли .env.example
+if [ ! -f "$ENV_EXAMPLE_FILE" ]; then
+  echo "❌ Файл .env.example не найден!"
+  exit 1
+fi
+
+# Копируем .env.example в .env
+cp "$ENV_EXAMPLE_FILE" "$ENV_FILE"
+echo "✅ Скопирован .env.example → .env"
 
 # Запрашиваем имя пользователя
 echo ""
 read -p "Введите ваше имя: " NAME_USER
+sed -i "s|^NAME_USER=.*|NAME_USER=$NAME_USER|" "$ENV_FILE" || echo "NAME_USER=$NAME_USER" >> "$ENV_FILE"
 
-# Запрашиваем email
+# Запрашиваем email для аккаунта
+echo ""
 read -p "Введите ваш email: " EMAIL_HOST_USER
+sed -i "s|^EMAIL_HOST_USER=.*|EMAIL_HOST_USER=$EMAIL_HOST_USER|" "$ENV_FILE" || echo "EMAIL_HOST_USER=$EMAIL_HOST_USER" >> "$ENV_FILE"
 
 # Запрашиваем и проверяем пароль
 while true; do
@@ -43,13 +50,20 @@ while true; do
 
     break
 done
-
-# Заполняем значения в .env
-sed -i "s|^NAME_USER=.*|NAME_USER=$NAME_USER|" "$ENV_FILE" || echo "NAME_USER=$NAME_USER" >> "$ENV_FILE"
-sed -i "s|^EMAIL_HOST_USER=.*|EMAIL_HOST_USER=$EMAIL_HOST_USER|" "$ENV_FILE" || echo "EMAIL_HOST_USER=$EMAIL_HOST_USER" >> "$ENV_FILE"
 sed -i "s|^EMAIL_HOST_PASSWORD=.*|EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD|" "$ENV_FILE" || echo "EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD" >> "$ENV_FILE"
 
+# Запрашиваем email для рассылок
+echo ""
+read -p "Введите email для рассылок: " EMAIL_FOR_NOTIFICATION
+sed -i "s|^EMAIL_FOR_NOTIFICATION=.*|EMAIL_FOR_NOTIFICATION=$EMAIL_FOR_NOTIFICATION|" "$ENV_FILE" || echo "EMAIL_FOR_NOTIFICATION=$EMAIL_FOR_NOTIFICATION" >> "$ENV_FILE"
+
+# Запрашиваем пароль для рассылок без проверки
+echo ""
+read -s -p "Введите пароль для рассылок: " PASSWORD_FOR_NOTIFICATION
+echo ""
+sed -i "s|^PASSWORD_FOR_NOTIFICATION=.*|PASSWORD_FOR_NOTIFICATION=$PASSWORD_FOR_NOTIFICATION|" "$ENV_FILE" || echo "PASSWORD_FOR_NOTIFICATION=$PASSWORD_FOR_NOTIFICATION" >> "$ENV_FILE"
 
 echo "✅ Окружение настроено!"
 
+# Запускаем Docker Compose
 docker-compose up --build

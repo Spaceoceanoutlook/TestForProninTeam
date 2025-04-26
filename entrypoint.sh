@@ -33,6 +33,6 @@ else:
 python manage.py fill_mock_data --users 5 --collects 10 --payments 20
 
 echo ""
-echo "Сервер Django запущен: http://localhost:8000/swagger/"
+echo "Сервер Django запущен: http://localhost:8000/admin/"
 
 python manage.py runserver 0.0.0.0:8000
