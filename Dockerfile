@@ -1,6 +1,5 @@
 FROM python:3.11-slim-bullseye
 
-
 RUN apt-get update && apt-get install -y \
     curl \
     build-essential \
@@ -17,12 +16,11 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 WORKDIR /app
 
 COPY pyproject.toml poetry.lock* ./
-
 RUN poetry install --no-interaction --no-ansi
 
 COPY . .
 
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh /app/scripts/prepare.sh
 
 WORKDIR /app/testforproninteam
 

@@ -1,43 +1,55 @@
 #!/bin/bash
-
 set -e
 
-echo "🔎 Проверка наличия .env файла..."
+ENV_FILE=".env"
+ENV_EXAMPLE_FILE=".env.example"
 
-if [ ! -f .env ]; then
-    echo "📄 Файл .env не найден. Создаём из .env.example..."
-    cp .env.example .env
+echo "=== ⚙️  Подготовка окружения ==="
+
+# Проверяем, существует ли уже .env
+if [ ! -f "$ENV_FILE" ]; then
+  if [ -f "$ENV_EXAMPLE_FILE" ]; then
+    cp "$ENV_EXAMPLE_FILE" "$ENV_FILE"
+    echo "✅ Скопирован .env.example → .env"
+  else
+    echo "❌ Файл .env.example не найден!"
+    exit 1
+  fi
 else
-    echo "✅ Файл .env уже существует."
+  echo "ℹ️ Файл .env уже существует, пропускаем создание."
 fi
 
+# Запрашиваем имя пользователя
 echo ""
-echo "🔧 Настройка параметров окружения..."
+read -p "Введите ваше имя: " NAME_USER
 
-# Функция для безопасной замены строк в файле .env
-replace_env_var() {
-    VAR_NAME=$1
-    VAR_VALUE=$2
-    if grep -q "^${VAR_NAME}=" .env; then
-        # Заменяем существующее значение
-        sed -i "s#^${VAR_NAME}=.*#${VAR_NAME}=${VAR_VALUE}#" .env
-    else
-        # Добавляем в конец файла
-        echo "${VAR_NAME}=${VAR_VALUE}" >> .env
+# Запрашиваем email
+read -p "Введите ваш email: " EMAIL_HOST_USER
+
+# Запрашиваем и проверяем пароль
+while true; do
+    read -s -p "Придумайте пароль: " EMAIL_HOST_PASSWORD
+    echo ""
+
+    if [ ${#EMAIL_HOST_PASSWORD} -lt 8 ]; then
+        echo "Пароль должен быть не короче 8 символов."
+        continue
     fi
-}
 
-read -p "📧 Введите свой email: " email
-replace_env_var "EMAIL_HOST_USER" "$email"
-replace_env_var "DEFAULT_FROM_EMAIL" "$email"
+    if [[ "$EMAIL_HOST_PASSWORD" =~ ^[0-9]+$ ]]; then
+        echo "Пароль не должен состоять только из цифр."
+        continue
+    fi
 
-read -s -p "🔑 Придумайте пароль для аккаунта: " email_password
-echo ""
-replace_env_var "EMAIL_HOST_PASSWORD" "$email_password"
+    break
+done
 
-echo ""
-echo "✅ Файл .env успешно настроен."
+# Заполняем значения в .env
+sed -i "s|^NAME_USER=.*|NAME_USER=$NAME_USER|" "$ENV_FILE" || echo "NAME_USER=$NAME_USER" >> "$ENV_FILE"
+sed -i "s|^EMAIL_HOST_USER=.*|EMAIL_HOST_USER=$EMAIL_HOST_USER|" "$ENV_FILE" || echo "EMAIL_HOST_USER=$EMAIL_HOST_USER" >> "$ENV_FILE"
+sed -i "s|^EMAIL_HOST_PASSWORD=.*|EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD|" "$ENV_FILE" || echo "EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD" >> "$ENV_FILE"
 
-echo ""
-echo "🚀 Запуск docker-compose up --build..."
+
+echo "✅ Окружение настроено!"
+
 docker-compose up --build
