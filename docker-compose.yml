@@ -1,17 +1,12 @@
 services:
   web:
     build: .
-    command: >
-      sh -c "poetry install &&
-             poetry run init-env &&
-             poetry run python manage.py migrate &&
-             poetry run python manage.py createsuperuser --noinput --username test --email test@example.com || true &&
-             poetry run python manage.py shell -c \"from django.contrib.auth.models import User; User.objects.filter(username='test').update(password='pbkdf2_sha256\$260000\$zKuGZc7RwTqDdDvKbF5tY0\$W9HxkEw3ZRyI7DsXcVbNmLkJhGfDsYtRwE=')\" &&
-             poetry run python manage.py fill_mock_data --users 5 --collects 10 --payments 20 &&
-             poetry run python manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - .:/app
     ports:
       - "8000:8000"
+    depends_on:
+      - redis
     environment:
-      - PYTHONUNBUFFERED=1
+      REDIS_URL: redis://redis:6379/0
+
+  redis:
+    image: redis:7-alpine

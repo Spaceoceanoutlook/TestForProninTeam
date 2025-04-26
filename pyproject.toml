@@ -8,7 +8,7 @@ packages = [{include = "testforproninteam"}]
 
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = ">=3.11,<4.0"
 django = "^5.2"
 djangorestframework = "^3.16.0"
 drf-yasg = "^1.21.10"

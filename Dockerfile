@@ -1,23 +1,29 @@
-# Используем официальный Python-образ
-FROM python:3.12-alpine
+FROM python:3.11-slim-bullseye
 
-# Set the working directory
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV POETRY_VERSION=1.8.2
+ENV POETRY_HOME=/opt/poetry
+ENV POETRY_VIRTUALENVS_CREATE=true
+ENV POETRY_VIRTUALENVS_IN_PROJECT=true
+ENV PATH="$POETRY_HOME/bin:$PATH"
+
+RUN curl -sSL https://install.python-poetry.org | python3 -
+
 WORKDIR /app
 
-# Copy the poetry.lock and pyproject.toml files
-COPY poetry.lock pyproject.toml ./
+COPY pyproject.toml poetry.lock* ./
 
-# Install Poetry
-RUN pip install poetry
+RUN poetry install --no-interaction --no-ansi
 
-# Install dependencies
-RUN poetry install
-
-# Copy the rest of the application code
 COPY . .
 
-# Expose the port the app runs on
-EXPOSE 8000
+RUN chmod +x /app/entrypoint.sh
 
-# Command to run the application
-CMD ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+WORKDIR /app/testforproninteam
+
+ENTRYPOINT ["/app/entrypoint.sh"]
