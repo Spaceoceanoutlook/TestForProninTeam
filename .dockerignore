@@ -1,11 +1,49 @@
-.git
-__pycache__
-*.pyc
-*.pyo
-*.pyd
-.Python
-env
-.venv
-.idea
+# === Git и системные файлы ===
+.git/
+.gitignore
+*.diff
+*.patch
+*.bak
+
+# === IDE и редакторы ===
+.idea/
+.vscode/
 *.swp
+*.swo
 .DS_Store
+*.code-workspace
+
+# === Виртуальные окружения и кеш Python ===
+**/__pycache__/
+*.py[cod]
+.python-version
+.venv/
+venv/
+env/
+.env/
+Pipfile*
+poetry.lock  # если используете poetry install в Dockerfile
+
+# === Логи и временные файлы ===
+*.log
+*.tmp
+*.cache
+*.pid
+*.seed
+
+# === Конфиденциальные данные ===
+.env
+.env.prod
+.env.dev
+*.secret
+credentials.json
+secrets/
+
+# === Артефакты сборки и тестов ===
+dist/
+build/
+*.egg-info/
+.coverage
+htmlcov/
+.mypy_cache/
+.pytest_cache/
