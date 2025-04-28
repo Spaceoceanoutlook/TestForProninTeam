@@ -8,30 +8,45 @@ echo "=== ⚙️  Подготовка окружения ==="
 
 # Если .env существует, пропускаем настройку и сразу запускаем контейнеры
 if [ -f "$ENV_FILE" ]; then
-  echo "ℹ️ Файл .env уже существует, пропускаем настройку."
+  echo "Файл .env уже существует, пропускаем настройку."
   docker-compose up --build
   exit 0
 fi
 
 # Проверяем, существует ли .env.example
 if [ ! -f "$ENV_EXAMPLE_FILE" ]; then
-  echo "❌ Файл .env.example не найден!"
+  echo "Файл .env.example не найден!"
   exit 1
 fi
 
 # Копируем .env.example в .env
 cp "$ENV_EXAMPLE_FILE" "$ENV_FILE"
-echo "✅ Скопирован .env.example → .env"
+echo "Скопирован .env.example → .env"
 
 # Запрашиваем имя пользователя
-echo ""
-read -p "Введите ваше имя: " NAME_USER
+while true; do
+    read -p "Введите ваше имя: " NAME_USER
+    if [ -n "$NAME_USER" ]; then
+        break
+    else
+        echo "Вы не ввели имя"
+    fi
+done
+
 sed -i "s|^NAME_USER=.*|NAME_USER=$NAME_USER|" "$ENV_FILE" || echo "NAME_USER=$NAME_USER" >> "$ENV_FILE"
 
 # Запрашиваем email для аккаунта
-echo ""
-read -p "Введите ваш email: " EMAIL_HOST_USER
+while true; do
+    read -p "Введите ваш email: " EMAIL_HOST_USER
+    if [ -n "$EMAIL_HOST_USER" ]; then
+        break
+    else
+        echo "Вы не ввели email"
+    fi
+done
+
 sed -i "s|^EMAIL_HOST_USER=.*|EMAIL_HOST_USER=$EMAIL_HOST_USER|" "$ENV_FILE" || echo "EMAIL_HOST_USER=$EMAIL_HOST_USER" >> "$ENV_FILE"
+
 
 # Запрашиваем и проверяем пароль
 while true; do
