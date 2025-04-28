@@ -20,8 +20,8 @@ RUN poetry install --no-interaction --no-ansi
 
 COPY . .
 
-RUN chmod +x /app/entrypoint.sh /app/scripts/prepare.sh
+RUN chmod +x /app/scripts/entrypoint.sh /app/scripts/prepare.sh
 
 WORKDIR /app/testforproninteam
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
