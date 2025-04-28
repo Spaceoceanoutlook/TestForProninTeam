@@ -19,5 +19,5 @@ class PaymentSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'user_name', 'collect', 'amount', 'created_at']
         read_only_fields = ('user_name', 'created_at')
         extra_kwargs = {
-            'collect': {'queryset': Collect.objects.select_related('author')}
+            'collect': {'queryset': Collect.objects.all()}
         }

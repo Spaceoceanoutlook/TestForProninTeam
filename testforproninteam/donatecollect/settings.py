@@ -116,13 +116,13 @@ DEFAULT_FROM_EMAIL = os.getenv('EMAIL_FOR_NOTIFICATION')
 
 
 CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.getenv("REDIS_URL", "redis://localhost:6379/0"),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        "LOCATION": os.getenv("REDIS_URL", "redis://redis:6379/0"),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         },
     }
 }
 
-CACHE_TTL = 60 * 5  # 5 минут
+CACHE_TTL = 60 * 5 

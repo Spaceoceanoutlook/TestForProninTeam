@@ -14,17 +14,17 @@ class CollectSerializer(serializers.ModelSerializer):
         format="%Y-%m-%dT%H:%M:%SZ",
         input_formats=["%Y-%m-%dT%H:%M:%SZ", "iso-8601"]
     )
-    
+
     class Meta:
         model = Collect
-        fields = ['id', 'title', 'author', 'target_amount', 'current_amount', 
+        fields = ['id', 'title', 'author', 'target_amount', 'current_amount',
                   'contributors_count', 'end_datetime']
         read_only_fields = ('current_amount', 'contributors_count', 'author')
 
     def validate_end_datetime(self, value):
         """Проверка, что дата завершения в будущем"""
         if value <= timezone.now():
-            raise serializers.ValidationError("Дата завершения должна быть в будущем")
+            raise serializers.ValidationError("Дата завершения должна быть в будущем.")
         return value
 
 class CollectDetailSerializer(CollectSerializer):
@@ -36,5 +36,5 @@ class CollectDetailSerializer(CollectSerializer):
         ]
 
     def get_payments(self, obj):
-        payments = obj.payments.all()[:10]  # Ограничиваем количество платежей
+        payments = obj.payments.all()
         return PaymentSerializer(payments, many=True, context=self.context).data
